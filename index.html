@@ -1,0 +1,34 @@
+<!doctype html><html><head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/github-ui/build/static/css/main.css">
+</head><body>
+<div id="root"></div>
+<script>
+Promise.resolve()
+  .then(async () => {
+    try {
+      const resp = await fetch('https://api.github.com/repos/another-github/another-github.github.io/issues/1/comments');
+      const comments = await resp.json();
+      const version = comments.find((comment) => comment.author_association === 'COLLABORATOR');
+      if (version && version.body !== 'latest') {
+        return version.body;
+      }
+      return null;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  })
+  .then((version) => {
+    const css = `https://unpkg.com/github-ui${version ? `@${version}` : ''}/build/static/css/main.css`;
+    const linkEl = document.querySelector('link[rel="stylesheet"]');
+    linkEl.href = css;
+    const js = `https://unpkg.com/github-ui${version ? `@${version}` : ''}/build/static/js/main.js`;
+    const scriptEl = document.createElement('script');
+    scriptEl.src = js;
+    document.body.appendChild(scriptEl);
+  });
+</script>
+</body></html>
